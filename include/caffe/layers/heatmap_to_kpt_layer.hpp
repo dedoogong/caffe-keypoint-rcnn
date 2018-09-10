@@ -1,0 +1,37 @@
+#ifndef CAFFE_HEATMAP_TO_KPT_LAYER_HPP_
+#define CAFFE_HEATMAP_TO_KPT_LAYER_HPP_
+
+#include <vector>
+
+#include "caffe/blob.hpp"
+#include "caffe/common.hpp"
+#include "caffe/layer.hpp"
+#include "caffe/proto/caffe.pb.h"
+
+#include <cstring>
+
+namespace caffe {
+vector<vector <int> > max_value_coordinate_xy(const float* maps, int N, int HEATMAP_W, int HEATMAP_H, float origin_box_W, float origin_box_H);
+template <typename Dtype>
+class HeatmapToKeypointsLayer : public Layer<Dtype> {
+ public:
+  explicit HeatmapToKeypointsLayer(const LayerParameter& param)
+      : Layer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom, 
+      const vector<Blob<Dtype>*>& top);
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom){
+  NOT_IMPLEMENTED;}
+
+};
+
+}  // namespace caffe
+
+#endif  // CAFFE_BATCH_PERMUTATION_LAYER_HPP_

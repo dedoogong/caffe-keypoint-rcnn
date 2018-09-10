@@ -1,0 +1,55 @@
+#ifndef CAFFE_BBOX_TRANSFORM_LAYER_HPP_
+#define CAFFE_BBOX_TRANSFORM_LAYER_HPP_
+
+#include <vector>
+
+#include "caffe/blob.hpp"
+#include "caffe/common.hpp"
+#include "caffe/layer.hpp"
+#include "caffe/proto/caffe.pb.h"
+
+#include <cstring>
+#include "caffe2/utils/eigen_utils.h"
+#include "caffe2/utils/math.h"
+#include "caffe2/utils/generate_proposals_op_util_nms.h"
+namespace caffe {
+ 
+template <typename Dtype>
+class BoxWithNMSLimitLayer : public Layer<Dtype> {
+ public:
+  explicit BoxWithNMSLimitLayer(const LayerParameter& param)
+      : Layer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom){
+  NOT_IMPLEMENTED;} 
+  // TEST.SCORE_THRESH
+  float score_thresh_ = 0.05;
+  // TEST.NMS
+  float nms_thresh_ = 0.3;
+  // TEST.DETECTIONS_PER_IM
+  int detections_per_im_ = 100;
+  // TEST.SOFT_NMS.ENABLED
+  bool soft_nms_enabled_ = false;
+  // TEST.SOFT_NMS.METHOD
+  unsigned int soft_nms_method_ = 1; // linear
+  // TEST.SOFT_NMS.SIGMA
+  float soft_nms_sigma_ = 0.5;
+  // Lower-bound on updated scores to discard boxes
+  float soft_nms_min_score_thresh_ = 0.001;
+  // Set for RRPN case to handle rotated boxes. Inputs should be in format
+  // [ctr_x, ctr_y, width, height, angle (in degrees)].
+  bool rotated_=false;
+};
+
+}  // namespace caffe
+
+#endif  // CAFFE_BBOX_TRANSFORM_LAYER_HPP_
